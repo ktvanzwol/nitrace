@@ -1,6 +1,7 @@
 import ctypes
 import ctypes.wintypes
 import enum
+import subprocess
 from pathlib import Path
 
 
@@ -94,6 +95,12 @@ def get_application_path() -> Path:
     buf = ctypes.create_string_buffer(buf_size)
     _check(_get_dll().nispy_GetApplicationPath(buf, buf_size))
     return Path(buf.value.decode())
+
+
+def launch_io_trace() -> subprocess.Popen:
+    """Launch the NI IO Trace application and return the process handle."""
+    app_path = get_application_path()
+    return subprocess.Popen([str(app_path)])
 
 
 def start_tracing(

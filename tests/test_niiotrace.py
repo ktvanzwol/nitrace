@@ -77,7 +77,29 @@ class TestGetApplicationPath:
             niiotrace.get_application_path()
 
 
-# --- start_spying ---
+# --- launch_io_trace ---
+
+
+class TestLaunchIOTrace:
+    def test_launches_application(self, _mock_dll):
+        def fake_get_app_path(buf, size):
+            buf.value = b"C:\\Program Files\\NI IO Trace\\niotrace.exe"
+            return 0
+
+        _mock_dll.nispy_GetApplicationPath.side_effect = fake_get_app_path
+
+        with patch("niiotrace.subprocess.Popen") as mock_popen:
+            result = niiotrace.launch_io_trace()
+            mock_popen.assert_called_once_with(["C:\\Program Files\\NI IO Trace\\niotrace.exe"])
+            assert result is mock_popen.return_value
+
+    def test_propagates_api_error(self, _mock_dll):
+        _mock_dll.nispy_GetApplicationPath.return_value = -303200
+        with pytest.raises(NiIOTraceError):
+            niiotrace.launch_io_trace()
+
+
+# --- start_tracing ---
 
 
 class TestStartTracing:
