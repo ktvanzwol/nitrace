@@ -45,7 +45,7 @@ class TestCheck:
             (-303209, CommandStatus.FAILED_FILE_ALREADY_EXISTS),
         ],
     )
-    def test_error_codes_raise_nispy_error(self, code, expected_status):
+    def test_error_codes_raise_niiotrace_error(self, code, expected_status):
         with pytest.raises(NiIOTraceError) as exc_info:
             _check(code)
         assert exc_info.value.status == expected_status
