@@ -107,6 +107,14 @@ def get_application_path() -> Path:
     return Path(buf.value.decode())
 
 
+_WINDOW_STATE_ARGS: dict[WindowState, list[str]] = {
+    WindowState.HIDDEN: ["/hidden"],
+    WindowState.NORMAL: [],
+    WindowState.MAXIMIZED: ["/maximized"],
+    WindowState.MINIMIZED: ["/minimized"],
+}
+
+
 def launch_io_trace(
     window_state: WindowState = WindowState.MINIMIZED,
 ) -> subprocess.Popen:
@@ -115,10 +123,8 @@ def launch_io_trace(
     Raises ``RuntimeError`` if the process exits immediately.
     """
     app_path = get_application_path()
-    startupinfo = subprocess.STARTUPINFO()
-    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-    startupinfo.wShowWindow = int(window_state)
-    process = subprocess.Popen([str(app_path)], startupinfo=startupinfo)
+    cmd = [str(app_path), *_WINDOW_STATE_ARGS[window_state]]
+    process = subprocess.Popen(cmd)
 
     if process.poll() is not None:
         raise RuntimeError(f"NI IO Trace exited immediately with code {process.returncode}")
