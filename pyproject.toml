@@ -16,6 +16,12 @@ build-backend = "uv_build"
 [project.scripts]
 niiotrace = "niiotrace.__cli__:main"
 
+[tool.pytest.ini_options]
+markers = [
+    "system: system tests that call the real NiSpyLog.dll (require NI IO Trace installed)",
+]
+addopts = "-m 'not system'"
+
 [dependency-groups]
 dev = [
     "pytest>=9.0.3",
