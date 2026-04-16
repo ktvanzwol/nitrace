@@ -1,4 +1,3 @@
-import time
 from pathlib import Path
 
 import pytest
@@ -64,7 +63,14 @@ class TestGetApplicationPath:
 class TestTracingLifecycle:
     def test_start_stop_close(self, _ensure_closed):
         niiotrace.launch_io_trace()
-        time.sleep(1)
+
+        niiotrace.start_tracing()
+        niiotrace.stop_tracing()
+        niiotrace.close_io_trace()
+
+    def test_launch_twice(self, _ensure_closed):
+        niiotrace.launch_io_trace()
+        niiotrace.launch_io_trace()
 
         niiotrace.start_tracing()
         niiotrace.stop_tracing()
@@ -74,7 +80,6 @@ class TestTracingLifecycle:
         log_file = tmp_path / "trace.txt"
 
         niiotrace.launch_io_trace()
-        time.sleep(1)
 
         niiotrace.start_tracing(
             log_file_setting=LogFileSetting.PLAIN_TEXT,
@@ -95,7 +100,6 @@ class TestTracingLifecycle:
         log_file.write_text("existing")
 
         niiotrace.launch_io_trace()
-        time.sleep(1)
 
         with pytest.raises(NiIOTraceError) as exc_info:
             niiotrace.start_tracing(

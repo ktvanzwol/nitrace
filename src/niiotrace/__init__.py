@@ -109,12 +109,19 @@ def get_application_path() -> Path:
 def launch_io_trace(
     window_state: WindowState = WindowState.MINIMIZED,
 ) -> subprocess.Popen:
-    """Launch the NI IO Trace application and return the process handle."""
+    """Launch the NI IO Trace application and return the process handle.
+
+    Raises ``RuntimeError`` if the process exits immediately.
+    """
     app_path = get_application_path()
     startupinfo = subprocess.STARTUPINFO()
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     startupinfo.wShowWindow = int(window_state)
-    return subprocess.Popen([str(app_path)], startupinfo=startupinfo)
+    process = subprocess.Popen([str(app_path)], startupinfo=startupinfo)
+
+    if process.poll() is not None:
+        raise RuntimeError(f"NI IO Trace exited immediately with code {process.returncode}")
+    return process
 
 
 def start_tracing(
