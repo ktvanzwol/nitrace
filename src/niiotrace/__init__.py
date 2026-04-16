@@ -23,6 +23,15 @@ class FileWriteMode(enum.IntEnum):
     CREATE_OR_OVERWRITE = 2
 
 
+class WindowState(enum.IntEnum):
+    """Controls the window state when launching the application."""
+
+    HIDDEN = 0
+    NORMAL = 1
+    MAXIMIZED = 3
+    MINIMIZED = 6
+
+
 class CommandStatus(enum.IntEnum):
     """Error codes returned by NI IO Trace API calls."""
 
@@ -97,10 +106,15 @@ def get_application_path() -> Path:
     return Path(buf.value.decode())
 
 
-def launch_io_trace() -> subprocess.Popen:
+def launch_io_trace(
+    window_state: WindowState = WindowState.MINIMIZED,
+) -> subprocess.Popen:
     """Launch the NI IO Trace application and return the process handle."""
     app_path = get_application_path()
-    return subprocess.Popen([str(app_path)])
+    startupinfo = subprocess.STARTUPINFO()
+    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    startupinfo.wShowWindow = int(window_state)
+    return subprocess.Popen([str(app_path)], startupinfo=startupinfo)
 
 
 def start_tracing(

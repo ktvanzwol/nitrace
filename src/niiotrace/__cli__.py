@@ -49,7 +49,7 @@ def main(argv: list[str] | None = None) -> None:
     try:
         if args.command == "start":
             if args.launch:
-                niiotrace.launch_io_trace()
+                niiotrace.launch_io_trace(window_state=niiotrace.WindowState.MINIMIZED)
                 print("NI IO Trace launched.")
             log_format_map = {
                 "none": niiotrace.LogFileSetting.NO_FILE,
