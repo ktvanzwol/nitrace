@@ -2,6 +2,7 @@ import ctypes
 import ctypes.wintypes
 import enum
 import subprocess
+import time
 from pathlib import Path
 
 
@@ -147,9 +148,37 @@ def log_message(message: str) -> None:
     _check(_get_dll().nispy_WriteTextEntry(message.encode()))
 
 
-def close_io_trace() -> None:
-    """Close the NI IO Trace application.
+def _find_process_ids(exe_name: str) -> list[int]:
+    """Return PIDs of all running processes matching *exe_name*."""
+    result = subprocess.run(
+        ["tasklist", "/FI", f"IMAGENAME eq {exe_name}", "/FO", "CSV", "/NH"],
+        capture_output=True,
+        text=True,
+    )
+    pids: list[int] = []
+    for line in result.stdout.splitlines():
+        parts = line.strip().strip('"').split('","')
+        if len(parts) >= 2 and parts[0].lower() == exe_name.lower():
+            pids.append(int(parts[1]))
+    return pids
+
+
+def _wait_for_process_exit(exe_name: str, timeout: float) -> None:
+    """Block until no processes named *exe_name* are running, or *timeout* expires."""
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if not _find_process_ids(exe_name):
+            return
+        time.sleep(0.25)
+    raise RuntimeError(f"{exe_name} did not exit within {timeout} seconds")
+
+
+def close_io_trace(timeout: float = 10.0) -> None:
+    """Close the NI IO Trace application and wait for the process to exit.
 
     Tracing is halted and the application must be relaunched for further use.
+    Raises ``RuntimeError`` if the process does not exit within *timeout* seconds.
     """
+    exe_name = get_application_path().name
     _check(_get_dll().nispy_CloseSpy())
+    _wait_for_process_exit(exe_name, timeout)

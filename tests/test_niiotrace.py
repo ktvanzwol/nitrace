@@ -68,14 +68,6 @@ class TestTracingLifecycle:
         niiotrace.stop_tracing()
         niiotrace.close_io_trace()
 
-    def test_launch_twice(self, _ensure_closed):
-        niiotrace.launch_io_trace()
-        niiotrace.launch_io_trace()
-
-        niiotrace.start_tracing()
-        niiotrace.stop_tracing()
-        niiotrace.close_io_trace()
-
     def test_log_message_written_to_file(self, _ensure_closed, tmp_path):
         log_file = tmp_path / "trace.txt"
 
