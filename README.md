@@ -14,13 +14,13 @@ A Python library for controlling [NI IO Trace](https://www.ni.com/docs/en-US/bun
 Install directly from GitHub:
 
 ```
-pip install git+https://github.com/kvanzwol/nitrace.git
+pip install git+https://github.com/ktvanzwol/nitrace.git
 ```
 
 Or with [uv](https://docs.astral.sh/uv/):
 
 ```
-uv add git+https://github.com/kvanzwol/nitrace.git
+uv add git+https://github.com/ktvanzwol/nitrace.git
 ```
 
 ## Quick Start
