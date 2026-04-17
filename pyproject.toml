@@ -1,5 +1,5 @@
 [project]
-name = "niiotrace"
+name = "nitrace"
 version = "0.1.0"
 description = "Python wrapper for NI IO Trace programmatic API (NiSpyLog.dll)"
 readme = "README.md"
@@ -15,7 +15,7 @@ requires = ["uv_build>=0.11.6,<0.12.0"]
 build-backend = "uv_build"
 
 [project.scripts]
-niiotrace = "niiotrace.__cli__:main"
+nitrace = "nitrace.__cli__:main"
 
 [dependency-groups]
 dev = [
@@ -24,7 +24,7 @@ dev = [
 ]
 
 [tool.coverage.run]
-source = ["niiotrace"]
+source = ["nitrace"]
 
 [tool.coverage.report]
 omit = ["tests/*"]

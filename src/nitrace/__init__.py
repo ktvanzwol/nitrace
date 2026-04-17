@@ -9,7 +9,7 @@ __all__ = [
     "FileWriteMode",
     "WindowState",
     "StatusCode",
-    "NiIOTraceError",
+    "NiTraceError",
     "get_application_path",
     "launch_io_trace",
     "start_tracing",
@@ -42,7 +42,7 @@ class FileWriteMode(enum.IntEnum):
     """Controls how the log file is created or opened.
 
     Members:
-        CREATE_ONLY: Create a new file. Raises :class:`NiIOTraceError` if the
+        CREATE_ONLY: Create a new file. Raises :class:`NiTraceError` if the
             file already exists.
         CREATE_OR_APPEND: Open an existing file and append to it, or create a
             new file if it does not exist.
@@ -76,7 +76,7 @@ class StatusCode(enum.IntEnum):
 
     ``SUCCESS`` indicates the call completed without error. All other members
     represent error conditions and are used to populate
-    :attr:`NiIOTraceError.status`.
+    :attr:`NiTraceError.status`.
     """
 
     SUCCESS = 0
@@ -92,7 +92,7 @@ class StatusCode(enum.IntEnum):
     FAILED_FILE_ALREADY_EXISTS = -303209
 
 
-class NiIOTraceError(Exception):
+class NiTraceError(Exception):
     """Raised when an NI IO Trace API call returns a non-success status.
 
     Attributes:
@@ -107,7 +107,7 @@ class NiIOTraceError(Exception):
 def _check(status_code: int) -> None:
     status = StatusCode(status_code)
     if status != StatusCode.SUCCESS:
-        raise NiIOTraceError(status)
+        raise NiTraceError(status)
 
 
 def _load_dll() -> ctypes.WinDLL:
@@ -153,7 +153,7 @@ def get_application_path() -> Path:
         A :class:`~pathlib.Path` pointing to the executable.
 
     Raises:
-        NiIOTraceError: If NI IO Trace is not installed.
+        NiTraceError: If NI IO Trace is not installed.
     """
     buf_size = 1024
     buf = ctypes.create_string_buffer(buf_size)
@@ -187,7 +187,7 @@ def launch_io_trace(
 
     Raises:
         RuntimeError: If the process exits immediately after being started.
-        NiIOTraceError: If the application path cannot be resolved.
+        NiTraceError: If the application path cannot be resolved.
     """
     app_path = get_application_path()
     cmd = [str(app_path), *_WINDOW_STATE_ARGS[window_state]]
@@ -217,7 +217,7 @@ def start_tracing(
         file_write_mode: How to handle an existing file at *file_path*.
 
     Raises:
-        NiIOTraceError: If the call fails (e.g. IO Trace is not running,
+        NiTraceError: If the call fails (e.g. IO Trace is not running,
             the file already exists with :attr:`FileWriteMode.CREATE_ONLY`,
             or the settings are invalid).
     """
@@ -233,7 +233,7 @@ def stop_tracing() -> None:
     restarted with another call to :func:`start_tracing`.
 
     Raises:
-        NiIOTraceError: If tracing was not active.
+        NiTraceError: If tracing was not active.
     """
     _check(_get_dll().nispy_StopSpying())
 
@@ -248,7 +248,7 @@ def log_message(message: str) -> None:
         message: The text to write. Will be UTF-8 encoded.
 
     Raises:
-        NiIOTraceError: If the IO Trace application has been closed.
+        NiTraceError: If the IO Trace application has been closed.
     """
     _check(_get_dll().nispy_WriteTextEntry(message.encode()))
 
@@ -292,7 +292,7 @@ def close_io_trace(timeout: float = 10.0) -> None:
         timeout: Maximum number of seconds to wait for the process to exit.
 
     Raises:
-        NiIOTraceError: If the close command fails.
+        NiTraceError: If the close command fails.
         RuntimeError: If the process does not exit within *timeout* seconds.
     """
     exe_name = get_application_path().name

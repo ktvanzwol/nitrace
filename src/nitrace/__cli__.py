@@ -1,12 +1,12 @@
 import argparse
 import sys
 
-import niiotrace
+import nitrace
 
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        prog="niiotrace",
+        prog="nitrace",
         description="Control NI IO Trace from the command line.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -49,21 +49,21 @@ def main(argv: list[str] | None = None) -> None:
     try:
         if args.command == "start":
             if args.launch:
-                niiotrace.launch_io_trace(window_state=niiotrace.WindowState.MINIMIZED)
+                nitrace.launch_io_trace(window_state=nitrace.WindowState.MINIMIZED)
                 print("NI IO Trace launched.")
             log_format_map = {
-                "none": niiotrace.LogFileSetting.NO_FILE,
-                "io-trace": niiotrace.LogFileSetting.IO_TRACE,
-                "plain-text": niiotrace.LogFileSetting.PLAIN_TEXT,
-                "csv": niiotrace.LogFileSetting.COMMA_SEPARATED,
-                "xml": niiotrace.LogFileSetting.XML,
+                "none": nitrace.LogFileSetting.NO_FILE,
+                "io-trace": nitrace.LogFileSetting.IO_TRACE,
+                "plain-text": nitrace.LogFileSetting.PLAIN_TEXT,
+                "csv": nitrace.LogFileSetting.COMMA_SEPARATED,
+                "xml": nitrace.LogFileSetting.XML,
             }
             write_mode_map = {
-                "create": niiotrace.FileWriteMode.CREATE_ONLY,
-                "append": niiotrace.FileWriteMode.CREATE_OR_APPEND,
-                "overwrite": niiotrace.FileWriteMode.CREATE_OR_OVERWRITE,
+                "create": nitrace.FileWriteMode.CREATE_ONLY,
+                "append": nitrace.FileWriteMode.CREATE_OR_APPEND,
+                "overwrite": nitrace.FileWriteMode.CREATE_OR_OVERWRITE,
             }
-            niiotrace.start_tracing(
+            nitrace.start_tracing(
                 log_file_setting=log_format_map[args.log_format],
                 file_path=args.file,
                 file_write_mode=write_mode_map[args.write_mode],
@@ -71,13 +71,13 @@ def main(argv: list[str] | None = None) -> None:
             print("Tracing started.")
 
         elif args.command == "stop":
-            niiotrace.stop_tracing()
+            nitrace.stop_tracing()
             print("Tracing stopped.")
             if args.close:
-                niiotrace.close_io_trace()
+                nitrace.close_io_trace()
                 print("NI IO Trace closed.")
 
-    except niiotrace.NiIOTraceError as exc:
+    except nitrace.NiTraceError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         sys.exit(1)
 

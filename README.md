@@ -1,4 +1,4 @@
-# niiotrace
+# nitrace
 
 A Python library for controlling [NI IO Trace](https://www.ni.com/docs/en-US/bundle/ni-io-trace/page/overview.html) programmatically. Launch the application, start and stop tracing, write log messages, and close IO Trace — all from Python.
 
@@ -14,38 +14,38 @@ A Python library for controlling [NI IO Trace](https://www.ni.com/docs/en-US/bun
 Install directly from GitHub:
 
 ```
-pip install git+https://github.com/kvanzwol/niiotrace.git
+pip install git+https://github.com/kvanzwol/nitrace.git
 ```
 
 Or with [uv](https://docs.astral.sh/uv/):
 
 ```
-uv add git+https://github.com/kvanzwol/niiotrace.git
+uv add git+https://github.com/kvanzwol/nitrace.git
 ```
 
 ## Quick Start
 
 ```python
-import niiotrace
+import nitrace
 
 # Launch the application (minimized by default)
-niiotrace.launch_io_trace()
+nitrace.launch_io_trace()
 
 # Start tracing to a plain-text log file
-niiotrace.start_tracing(
-    log_file_setting=niiotrace.LogFileSetting.PLAIN_TEXT,
+nitrace.start_tracing(
+    log_file_setting=nitrace.LogFileSetting.PLAIN_TEXT,
     file_path="trace.txt",
-    file_write_mode=niiotrace.FileWriteMode.CREATE_OR_OVERWRITE,
+    file_write_mode=nitrace.FileWriteMode.CREATE_OR_OVERWRITE,
 )
 
 # Insert a marker into the trace log
-niiotrace.log_message("Test started")
+nitrace.log_message("Test started")
 
 # ... run your NI driver calls ...
 
 # Stop tracing and close the application
-niiotrace.stop_tracing()
-niiotrace.close_io_trace()
+nitrace.stop_tracing()
+nitrace.close_io_trace()
 ```
 
 ## CLI
@@ -54,13 +54,13 @@ A command-line interface is included:
 
 ```
 # Launch IO Trace and start tracing to a CSV file
-niiotrace start --launch --log-format csv --file trace.csv --write-mode overwrite
+nitrace start --launch --log-format csv --file trace.csv --write-mode overwrite
 
 # Stop tracing and close the application
-niiotrace stop --close
+nitrace stop --close
 ```
 
-### `niiotrace start`
+### `nitrace start`
 
 | Option | Description |
 |---|---|
@@ -69,7 +69,7 @@ niiotrace stop --close
 | `--file` | Path to the log file. |
 | `--write-mode` | File write mode: `create`, `append`, `overwrite` (default: `create`). |
 
-### `niiotrace stop`
+### `nitrace stop`
 
 | Option | Description |
 |---|---|
@@ -92,7 +92,7 @@ niiotrace stop --close
   - [`WindowState`](#windowstate)
   - [`StatusCode`](#statuscode)
 - **Exceptions:**
-  - [`NiIOTraceError`](#niiotraceerror)
+  - [`NiTraceError`](#nitraceerror)
 
 ### Functions
 
@@ -100,7 +100,7 @@ niiotrace stop --close
 
 Return the filesystem path to the NI IO Trace executable.
 
-**Raises:** `NiIOTraceError` if NI IO Trace is not installed.
+**Raises:** `NiTraceError` if NI IO Trace is not installed.
 
 ---
 
@@ -112,7 +112,7 @@ Launch the NI IO Trace application and return the process handle. The applicatio
 |---|---|---|---|
 | `window_state` | `WindowState` | `MINIMIZED` | Initial window state of the application. |
 
-**Raises:** `RuntimeError` if the process exits immediately. `NiIOTraceError` if the application path cannot be resolved.
+**Raises:** `RuntimeError` if the process exits immediately. `NiTraceError` if the application path cannot be resolved.
 
 ---
 
@@ -126,7 +126,7 @@ Start tracing NI driver calls. NI IO Trace must already be running.
 | `file_path` | `str \| Path \| None` | `None` | Path to the log file. Required when `log_file_setting` is not `NO_FILE`. |
 | `file_write_mode` | `FileWriteMode` | `CREATE_ONLY` | How to handle an existing file. |
 
-**Raises:** `NiIOTraceError` if IO Trace is not running, the file already exists with `CREATE_ONLY`, or the settings are invalid.
+**Raises:** `NiTraceError` if IO Trace is not running, the file already exists with `CREATE_ONLY`, or the settings are invalid.
 
 ---
 
@@ -134,7 +134,7 @@ Start tracing NI driver calls. NI IO Trace must already be running.
 
 Stop tracing NI driver calls. The application remains open and tracing can be restarted.
 
-**Raises:** `NiIOTraceError` if tracing was not active.
+**Raises:** `NiTraceError` if tracing was not active.
 
 ---
 
@@ -146,7 +146,7 @@ Write a custom text entry into the active trace log. Useful for inserting marker
 |---|---|---|
 | `message` | `str` | The text to write. |
 
-**Raises:** `NiIOTraceError` if the IO Trace application has been closed.
+**Raises:** `NiTraceError` if the IO Trace application has been closed.
 
 ---
 
@@ -158,7 +158,7 @@ Close the NI IO Trace application and wait for the process to exit. The applicat
 |---|---|---|---|
 | `timeout` | `float` | `10.0` | Maximum seconds to wait for the process to exit. |
 
-**Raises:** `NiIOTraceError` if the close command fails. `RuntimeError` if the process does not exit within the timeout.
+**Raises:** `NiTraceError` if the close command fails. `RuntimeError` if the process does not exit within the timeout.
 
 ### Enums
 
@@ -176,7 +176,7 @@ Close the NI IO Trace application and wait for the process to exit. The applicat
 
 | Member | Value | Description |
 |---|---|---|
-| `CREATE_ONLY` | 0 | Create a new file. Raises `NiIOTraceError` if the file exists. |
+| `CREATE_ONLY` | 0 | Create a new file. Raises `NiTraceError` if the file exists. |
 | `CREATE_OR_APPEND` | 1 | Append to an existing file or create a new one. |
 | `CREATE_OR_OVERWRITE` | 2 | Overwrite an existing file or create a new one. |
 
@@ -209,11 +209,11 @@ Close the NI IO Trace application and wait for the process to exit. The applicat
 
 #### `IOTraceHandler`
 
-`niiotrace.logging.IOTraceHandler` is a [`logging.Handler`](https://docs.python.org/3/library/logging.html#handler-objects) subclass that forwards Python log records into the NI IO Trace log via `log_message`. If the IO Trace application is not running, the error is passed to `handleError`.
+`nitrace.logging.IOTraceHandler` is a [`logging.Handler`](https://docs.python.org/3/library/logging.html#handler-objects) subclass that forwards Python log records into the NI IO Trace log via `log_message`. If the IO Trace application is not running, the error is passed to `handleError`.
 
 ```python
 import logging
-from niiotrace.logging import IOTraceHandler
+from nitrace.logging import IOTraceHandler
 
 logger = logging.getLogger("my_app")
 handler = IOTraceHandler()
@@ -225,7 +225,7 @@ See [`examples/logging_handler.py`](examples/logging_handler.py) for a complete 
 
 ### Exceptions
 
-#### `NiIOTraceError`
+#### `NiTraceError`
 
 Raised when an API call returns a non-success status.
 
