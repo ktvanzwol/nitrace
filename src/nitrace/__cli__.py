@@ -14,11 +14,6 @@ def main(argv: list[str] | None = None) -> None:
     # start
     start_parser = subparsers.add_parser("start", help="Start tracing driver calls.")
     start_parser.add_argument(
-        "--launch",
-        action="store_true",
-        help="Launch NI IO Trace before starting.",
-    )
-    start_parser.add_argument(
         "--log-format",
         choices=["none", "io-trace", "plain-text", "csv", "xml"],
         default="none",
@@ -48,9 +43,7 @@ def main(argv: list[str] | None = None) -> None:
 
     try:
         if args.command == "start":
-            if args.launch:
-                nitrace.launch_io_trace(window_state=nitrace.WindowState.MINIMIZED)
-                print("NI IO Trace launched.")
+            nitrace.launch_io_trace(window_state=nitrace.WindowState.MINIMIZED)
             log_format_map = {
                 "none": nitrace.LogFileSetting.NO_FILE,
                 "io-trace": nitrace.LogFileSetting.IO_TRACE,

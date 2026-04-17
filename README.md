@@ -57,7 +57,7 @@ A command-line interface is included:
 
 ```
 # Launch IO Trace and start tracing to a CSV file
-nitrace start --launch --log-format csv --file trace.csv --write-mode overwrite
+nitrace start --log-format csv --file trace.csv --write-mode overwrite
 
 # Stop tracing and close the application
 nitrace stop --close
@@ -67,7 +67,6 @@ nitrace stop --close
 
 | Option | Description |
 |---|---|
-| `--launch` | Launch NI IO Trace before starting. |
 | `--log-format` | Log file format: `none`, `io-trace`, `plain-text`, `csv`, `xml` (default: `none`). |
 | `--file` | Path to the log file. |
 | `--write-mode` | File write mode: `create`, `append`, `overwrite` (default: `create`). |

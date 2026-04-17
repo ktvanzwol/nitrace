@@ -26,7 +26,7 @@ def mock_api():
 class TestCLIStart:
     def test_defaults(self, mock_api):
         cli.main(["start"])
-        mock_api["launch"].assert_not_called()
+        mock_api["launch"].assert_called_once()
         mock_api["start"].assert_called_once_with(
             log_file_setting=LogFileSetting.NO_FILE,
             file_path=None,
@@ -37,7 +37,6 @@ class TestCLIStart:
         cli.main(
             [
                 "start",
-                "--launch",
                 "--log-format",
                 "xml",
                 "--file",
