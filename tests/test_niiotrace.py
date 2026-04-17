@@ -14,7 +14,11 @@ from niiotrace import (
 
 @pytest.fixture()
 def _ensure_closed():
-    """Guarantee IO Trace is shut down after each test."""
+    """Guarantee IO Trace is not running and shut down after each test."""
+    try:
+        niiotrace.close_io_trace()
+    except NiIOTraceError:
+        pass
     yield
     try:
         niiotrace.stop_tracing()
@@ -100,6 +104,19 @@ class TestTracingLifecycle:
                 file_write_mode=FileWriteMode.CREATE_ONLY,
             )
         assert exc_info.value.status == StatusCode.FAILED_FILE_ALREADY_EXISTS
+
+    def test_rejects_invalid_file(self, _ensure_closed):
+        log_file = "none_existing.txt"
+
+        niiotrace.launch_io_trace()
+
+        with pytest.raises(NiIOTraceError) as exc_info:
+            niiotrace.start_tracing(
+                log_file_setting=LogFileSetting.PLAIN_TEXT,
+                file_path=log_file,
+                file_write_mode=FileWriteMode.CREATE_ONLY,
+            )
+        assert exc_info.value.status == StatusCode.FAILED_UNABLE_TO_OPEN_LOG_FILE
 
 
 class TestEnums:
