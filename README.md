@@ -33,7 +33,7 @@ import nitrace
 # Launch the application (minimized by default)
 nitrace.launch_io_trace()
 
-# Start tracing to a plain-text log file
+# Start tracing to a NI IO Trace log file
 nitrace.start_tracing(
     log_file_setting=nitrace.LogFileSetting.IO_TRACE,
     file_path=Path.cwd() / "trace.nitrace",
