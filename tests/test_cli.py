@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
+import nitrace.__cli__ as cli
 from nitrace import FileWriteMode, LogFileSetting, NiTraceError, StatusCode
-from nitrace.__cli__ import main
 
 
 @pytest.fixture()
@@ -25,7 +25,7 @@ def mock_api():
 
 class TestCLIStart:
     def test_defaults(self, mock_api):
-        main(["start"])
+        cli.main(["start"])
         mock_api["launch"].assert_not_called()
         mock_api["start"].assert_called_once_with(
             log_file_setting=LogFileSetting.NO_FILE,
@@ -34,7 +34,7 @@ class TestCLIStart:
         )
 
     def test_all_options(self, mock_api):
-        main(
+        cli.main(
             [
                 "start",
                 "--launch",
@@ -56,7 +56,7 @@ class TestCLIStart:
 
 class TestCLIStop:
     def test_stop_with_close(self, mock_api):
-        main(["stop", "--close"])
+        cli.main(["stop", "--close"])
         mock_api["stop"].assert_called_once()
         mock_api["close"].assert_called_once()
 
@@ -65,5 +65,5 @@ class TestCLIErrorHandling:
     def test_api_error_exits(self, mock_api, capsys):
         mock_api["stop"].side_effect = NiTraceError(StatusCode.FAILED_INCOMPATIBLE_STATE)
         with pytest.raises(SystemExit, match="1"):
-            main(["stop"])
+            cli.main(["stop"])
         assert "Error" in capsys.readouterr().err
