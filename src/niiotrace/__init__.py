@@ -25,7 +25,7 @@ class LogFileSetting(enum.IntEnum):
     Members:
         NO_FILE: Do not write a log file. Trace data is only visible in the
             NI IO Trace GUI.
-        IO_TRACE: Write an NI IO Trace binary log file (``.iotrace``).
+        IO_TRACE: Write an NI IO Trace binary log file (``.nitrace``).
         PLAIN_TEXT: Write a human-readable plain-text log file.
         COMMA_SEPARATED: Write a comma-separated values (CSV) log file.
         XML: Write an XML-formatted log file.
