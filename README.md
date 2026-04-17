@@ -77,6 +77,10 @@ niiotrace stop --close
 
 ## API Reference
 
+- **Functions:** [`get_application_path`](#get_application_path---path) · [`launch_io_trace`](#launch_io_tracewindow_statewindowstateminimized---subprocesspopen) · [`start_tracing`](#start_tracinglog_file_settinglogfilesettingno_file-file_pathnone-file_write_modefilewritemodecreate_only---none) · [`stop_tracing`](#stop_tracing---none) · [`log_message`](#log_messagemessage-str---none) · [`close_io_trace`](#close_io_tracetimeout-float--100---none)
+- **Enums:** [`LogFileSetting`](#logfilesetting) · [`FileWriteMode`](#filewritemode) · [`WindowState`](#windowstate) · [`StatusCode`](#statuscode)
+- **Exceptions:** [`NiIOTraceError`](#niiotraceerror)
+
 ### Functions
 
 #### `get_application_path() -> Path`
@@ -197,3 +201,7 @@ Raised when an API call returns a non-success status.
 | Attribute | Type | Description |
 |---|---|---|
 | `status` | `StatusCode` | The status code that triggered the error. |
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

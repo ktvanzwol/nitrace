@@ -7,6 +7,7 @@ authors = [
     { name = "Karsten van Zwol", email = "karsten.van.zwol@gmail.com" }
 ]
 requires-python = ">=3.13"
+license = "MIT"
 dependencies = []
 
 [build-system]
