@@ -4,6 +4,20 @@ import subprocess
 import time
 from pathlib import Path
 
+__all__ = [
+    "LogFileSetting",
+    "FileWriteMode",
+    "WindowState",
+    "StatusCode",
+    "NiIOTraceError",
+    "get_application_path",
+    "launch_io_trace",
+    "start_tracing",
+    "stop_tracing",
+    "log_message",
+    "close_io_trace",
+]
+
 
 class LogFileSetting(enum.IntEnum):
     """Controls the log file format used when tracing.
@@ -57,7 +71,7 @@ class WindowState(enum.IntEnum):
     MINIMIZED = 3
 
 
-class CommandStatus(enum.IntEnum):
+class StatusCode(enum.IntEnum):
     """Status codes returned by NI IO Trace API calls.
 
     ``SUCCESS`` indicates the call completed without error. All other members
@@ -85,14 +99,14 @@ class NiIOTraceError(Exception):
         status: The :class:`CommandStatus` that triggered the error.
     """
 
-    def __init__(self, status: CommandStatus) -> None:
+    def __init__(self, status: StatusCode) -> None:
         self.status = status
         super().__init__(f"NI IO Trace API error: {status.name} ({status.value})")
 
 
 def _check(status_code: int) -> None:
-    status = CommandStatus(status_code)
-    if status != CommandStatus.SUCCESS:
+    status = StatusCode(status_code)
+    if status != StatusCode.SUCCESS:
         raise NiIOTraceError(status)
 
 

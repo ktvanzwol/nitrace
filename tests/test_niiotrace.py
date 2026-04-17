@@ -4,10 +4,10 @@ import pytest
 
 import niiotrace
 from niiotrace import (
-    CommandStatus,
     FileWriteMode,
     LogFileSetting,
     NiIOTraceError,
+    StatusCode,
     _check,
 )
 
@@ -33,16 +33,16 @@ class TestCheck:
     @pytest.mark.parametrize(
         "code, expected_status",
         [
-            (-303200, CommandStatus.FAILED_NO_EXECUTE),
-            (-303201, CommandStatus.FAILED_INCOMPATIBLE_STATE),
-            (-303202, CommandStatus.FAILED_UNABLE_TO_OPEN_LOG_FILE),
-            (-303203, CommandStatus.FAILED_GUI_CLOSED),
-            (-303204, CommandStatus.FAILED_INVALID_SETTINGS),
-            (-303205, CommandStatus.FAILED_BAD_PARAMETER),
-            (-303206, CommandStatus.FAILED_INTERNAL_FAILURE),
-            (-303207, CommandStatus.FAILED_INVALID_FILE_EXTENSION),
-            (-303208, CommandStatus.FAILED_BUFFER_TOO_SMALL),
-            (-303209, CommandStatus.FAILED_FILE_ALREADY_EXISTS),
+            (-303200, StatusCode.FAILED_NO_EXECUTE),
+            (-303201, StatusCode.FAILED_INCOMPATIBLE_STATE),
+            (-303202, StatusCode.FAILED_UNABLE_TO_OPEN_LOG_FILE),
+            (-303203, StatusCode.FAILED_GUI_CLOSED),
+            (-303204, StatusCode.FAILED_INVALID_SETTINGS),
+            (-303205, StatusCode.FAILED_BAD_PARAMETER),
+            (-303206, StatusCode.FAILED_INTERNAL_FAILURE),
+            (-303207, StatusCode.FAILED_INVALID_FILE_EXTENSION),
+            (-303208, StatusCode.FAILED_BUFFER_TOO_SMALL),
+            (-303209, StatusCode.FAILED_FILE_ALREADY_EXISTS),
         ],
     )
     def test_error_codes_raise(self, code, expected_status):
@@ -99,7 +99,7 @@ class TestTracingLifecycle:
                 file_path=log_file,
                 file_write_mode=FileWriteMode.CREATE_ONLY,
             )
-        assert exc_info.value.status == CommandStatus.FAILED_FILE_ALREADY_EXISTS
+        assert exc_info.value.status == StatusCode.FAILED_FILE_ALREADY_EXISTS
 
 
 class TestEnums:
@@ -116,5 +116,5 @@ class TestEnums:
         assert FileWriteMode.CREATE_OR_OVERWRITE == 2
 
     def test_command_status_values(self):
-        assert CommandStatus.SUCCESS == 0
-        assert CommandStatus.FAILED_NO_EXECUTE == -303200
+        assert StatusCode.SUCCESS == 0
+        assert StatusCode.FAILED_NO_EXECUTE == -303200

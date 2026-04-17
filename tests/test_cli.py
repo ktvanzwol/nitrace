@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from niiotrace import CommandStatus, FileWriteMode, LogFileSetting, NiIOTraceError
+from niiotrace import FileWriteMode, LogFileSetting, NiIOTraceError, StatusCode
 from niiotrace.__cli__ import main
 
 
@@ -52,7 +52,7 @@ class TestCLIStop:
 
 class TestCLIErrorHandling:
     def test_api_error_exits(self, mock_api, capsys):
-        mock_api["stop"].side_effect = NiIOTraceError(CommandStatus.FAILED_INCOMPATIBLE_STATE)
+        mock_api["stop"].side_effect = NiIOTraceError(StatusCode.FAILED_INCOMPATIBLE_STATE)
         with pytest.raises(SystemExit, match="1"):
             main(["stop"])
         assert "Error" in capsys.readouterr().err
