@@ -195,6 +195,20 @@ def launch_io_trace(
 
     if process.poll() is not None:
         raise RuntimeError(f"NI IO Trace exited immediately with code {process.returncode}")
+
+    # Try to start a tracing session to verify that the application is ready to accept commands.
+    # If this fails, wait a moment and try again, as the application may still be finishing its launch process.
+    # This typically happens when the application is launched for the first time.
+    for _ in range(3):
+        try:
+            start_tracing()  # Test that we can communicate with the application
+            stop_tracing()  # Stop the test tracing session immediately
+            break  # Success, exit the loop
+        except NiTraceError as _:
+            time.sleep(1)  # Wait a moment for the application to finish launching
+    else:
+        raise RuntimeError("NI IO Trace failed to respond after multiple attempts")
+
     return process
 
 
