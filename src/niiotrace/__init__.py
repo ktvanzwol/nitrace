@@ -1,5 +1,4 @@
 import ctypes
-import ctypes.wintypes
 import enum
 import subprocess
 import time
@@ -7,7 +6,16 @@ from pathlib import Path
 
 
 class LogFileSetting(enum.IntEnum):
-    """Controls log file format."""
+    """Controls the log file format used when tracing.
+
+    Members:
+        NO_FILE: Do not write a log file. Trace data is only visible in the
+            NI IO Trace GUI.
+        IO_TRACE: Write an NI IO Trace binary log file (``.iotrace``).
+        PLAIN_TEXT: Write a human-readable plain-text log file.
+        COMMA_SEPARATED: Write a comma-separated values (CSV) log file.
+        XML: Write an XML-formatted log file.
+    """
 
     NO_FILE = -1
     IO_TRACE = 0
@@ -17,7 +25,16 @@ class LogFileSetting(enum.IntEnum):
 
 
 class FileWriteMode(enum.IntEnum):
-    """Controls file creation behavior."""
+    """Controls how the log file is created or opened.
+
+    Members:
+        CREATE_ONLY: Create a new file. Raises :class:`NiIOTraceError` if the
+            file already exists.
+        CREATE_OR_APPEND: Open an existing file and append to it, or create a
+            new file if it does not exist.
+        CREATE_OR_OVERWRITE: Overwrite an existing file, or create a new file
+            if it does not exist.
+    """
 
     CREATE_ONLY = 0
     CREATE_OR_APPEND = 1
@@ -25,16 +42,28 @@ class FileWriteMode(enum.IntEnum):
 
 
 class WindowState(enum.IntEnum):
-    """Controls the window state when launching the application."""
+    """Controls the window state of the NI IO Trace application at launch.
+
+    Members:
+        HIDDEN: Launch the application with no visible window.
+        NORMAL: Launch the application in its default (restored) window state.
+        MAXIMIZED: Launch the application with the window maximized.
+        MINIMIZED: Launch the application with the window minimized.
+    """
 
     HIDDEN = 0
     NORMAL = 1
-    MAXIMIZED = 3
-    MINIMIZED = 6
+    MAXIMIZED = 2
+    MINIMIZED = 3
 
 
 class CommandStatus(enum.IntEnum):
-    """Error codes returned by NI IO Trace API calls."""
+    """Status codes returned by NI IO Trace API calls.
+
+    ``SUCCESS`` indicates the call completed without error. All other members
+    represent error conditions and are used to populate
+    :attr:`NiIOTraceError.status`.
+    """
 
     SUCCESS = 0
     FAILED_NO_EXECUTE = -303200
@@ -50,7 +79,11 @@ class CommandStatus(enum.IntEnum):
 
 
 class NiIOTraceError(Exception):
-    """Raised when an NI IO Trace API call returns a non-success status."""
+    """Raised when an NI IO Trace API call returns a non-success status.
+
+    Attributes:
+        status: The :class:`CommandStatus` that triggered the error.
+    """
 
     def __init__(self, status: CommandStatus) -> None:
         self.status = status
@@ -100,7 +133,14 @@ def _get_dll() -> ctypes.WinDLL:
 
 
 def get_application_path() -> Path:
-    """Return the path to the NI IO Trace application executable."""
+    """Return the filesystem path to the NI IO Trace executable.
+
+    Returns:
+        A :class:`~pathlib.Path` pointing to the executable.
+
+    Raises:
+        NiIOTraceError: If NI IO Trace is not installed.
+    """
     buf_size = 1024
     buf = ctypes.create_string_buffer(buf_size)
     _check(_get_dll().nispy_GetApplicationPath(buf, buf_size))
@@ -120,7 +160,20 @@ def launch_io_trace(
 ) -> subprocess.Popen:
     """Launch the NI IO Trace application and return the process handle.
 
-    Raises ``RuntimeError`` if the process exits immediately.
+    The application must be running before calls to :func:`start_tracing`,
+    :func:`stop_tracing`, :func:`log_message`, or :func:`close_io_trace` can
+    succeed.
+
+    Args:
+        window_state: The initial window state of the application. Defaults to
+            :attr:`WindowState.MINIMIZED`.
+
+    Returns:
+        The :class:`~subprocess.Popen` instance for the launched process.
+
+    Raises:
+        RuntimeError: If the process exits immediately after being started.
+        NiIOTraceError: If the application path cannot be resolved.
     """
     app_path = get_application_path()
     cmd = [str(app_path), *_WINDOW_STATE_ARGS[window_state]]
@@ -136,21 +189,53 @@ def start_tracing(
     file_path: str | Path | None = None,
     file_write_mode: FileWriteMode = FileWriteMode.CREATE_ONLY,
 ) -> None:
-    """Start tracing driver calls.
+    """Start tracing NI driver calls.
 
-    NI IO Trace must already be launched before calling this function.
+    NI IO Trace must already be running (see :func:`launch_io_trace`) before
+    calling this function.
+
+    Args:
+        log_file_setting: The format of the log file to write. Use
+            :attr:`LogFileSetting.NO_FILE` to trace without writing a file.
+        file_path: The path to the log file. Required when *log_file_setting*
+            is not :attr:`LogFileSetting.NO_FILE`. Can be a string or
+            :class:`~pathlib.Path`.
+        file_write_mode: How to handle an existing file at *file_path*.
+
+    Raises:
+        NiIOTraceError: If the call fails (e.g. IO Trace is not running,
+            the file already exists with :attr:`FileWriteMode.CREATE_ONLY`,
+            or the settings are invalid).
     """
     path_bytes = str(file_path).encode() if file_path is not None else None
     _check(_get_dll().nispy_StartSpying(int(log_file_setting), path_bytes, int(file_write_mode)))
 
 
 def stop_tracing() -> None:
-    """Stop tracing driver calls."""
+    """Stop tracing NI driver calls.
+
+    Tracing must have been started with :func:`start_tracing` before calling
+    this function. The NI IO Trace application remains open and can be
+    restarted with another call to :func:`start_tracing`.
+
+    Raises:
+        NiIOTraceError: If tracing was not active.
+    """
     _check(_get_dll().nispy_StopSpying())
 
 
 def log_message(message: str) -> None:
-    """Write a debug message into the current NI IO Trace log."""
+    """Write a custom text entry into the active NI IO Trace log.
+
+    This is useful for inserting markers or annotations into a trace session
+    to correlate driver calls with application-level events.
+
+    Args:
+        message: The text to write. Will be UTF-8 encoded.
+
+    Raises:
+        NiIOTraceError: If the IO Trace application has been closed.
+    """
     _check(_get_dll().nispy_WriteTextEntry(message.encode()))
 
 
@@ -182,8 +267,19 @@ def _wait_for_process_exit(exe_name: str, timeout: float) -> None:
 def close_io_trace(timeout: float = 10.0) -> None:
     """Close the NI IO Trace application and wait for the process to exit.
 
-    Tracing is halted and the application must be relaunched for further use.
-    Raises ``RuntimeError`` if the process does not exit within *timeout* seconds.
+    Sends the close command and then polls until the NI IO Trace process is
+    no longer running. The application does not need to have been launched by
+    :func:`launch_io_trace` — it may have been started manually.
+
+    After this call, the application must be relaunched before any further
+    tracing can occur.
+
+    Args:
+        timeout: Maximum number of seconds to wait for the process to exit.
+
+    Raises:
+        NiIOTraceError: If the close command fails.
+        RuntimeError: If the process does not exit within *timeout* seconds.
     """
     exe_name = get_application_path().name
     _check(_get_dll().nispy_CloseSpy())
