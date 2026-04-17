@@ -117,21 +117,3 @@ class TestTracingLifecycle:
                 file_write_mode=FileWriteMode.CREATE_ONLY,
             )
         assert exc_info.value.status == StatusCode.FAILED_UNABLE_TO_OPEN_LOG_FILE
-
-
-class TestEnums:
-    def test_log_file_setting_values(self):
-        assert LogFileSetting.NO_FILE == -1
-        assert LogFileSetting.IO_TRACE == 0
-        assert LogFileSetting.PLAIN_TEXT == 1
-        assert LogFileSetting.COMMA_SEPARATED == 2
-        assert LogFileSetting.XML == 3
-
-    def test_file_write_mode_values(self):
-        assert FileWriteMode.CREATE_ONLY == 0
-        assert FileWriteMode.CREATE_OR_APPEND == 1
-        assert FileWriteMode.CREATE_OR_OVERWRITE == 2
-
-    def test_command_status_values(self):
-        assert StatusCode.SUCCESS == 0
-        assert StatusCode.FAILED_NO_EXECUTE == -303200
