@@ -1,4 +1,4 @@
-# nitrace
+# NI IO Trace Python API
 
 A Python library for controlling [NI IO Trace](https://www.ni.com/docs/en-US/bundle/ni-io-trace/page/overview.html) programmatically. Launch the application, start and stop tracing, write log messages, and close IO Trace — all from Python.
 

@@ -34,7 +34,18 @@ class TestCLIStart:
         )
 
     def test_all_options(self, mock_api):
-        main(["start", "--launch", "--log-format", "xml", "--file", "trace.xml", "--write-mode", "overwrite"])
+        main(
+            [
+                "start",
+                "--launch",
+                "--log-format",
+                "xml",
+                "--file",
+                "trace.xml",
+                "--write-mode",
+                "overwrite",
+            ]
+        )
         mock_api["launch"].assert_called_once()
         mock_api["start"].assert_called_once_with(
             log_file_setting=LogFileSetting.XML,

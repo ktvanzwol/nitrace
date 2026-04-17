@@ -5,7 +5,6 @@ entries in the IO Trace log alongside NI driver calls.
 """
 
 import logging
-from pathlib import Path
 
 import nitrace
 from nitrace.logging import IOTraceHandler

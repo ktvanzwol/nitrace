@@ -21,7 +21,16 @@ nitrace = "nitrace.__cli__:main"
 dev = [
     "pytest>=9.0.3",
     "pytest-cov>=7.1.0",
+    "ruff>=0.11.0",
 ]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.format]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
 
 [tool.coverage.run]
 source = ["nitrace"]
