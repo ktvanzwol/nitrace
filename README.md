@@ -77,9 +77,22 @@ niiotrace stop --close
 
 ## API Reference
 
-- **Functions:** [`get_application_path`](#get_application_path---path) · [`launch_io_trace`](#launch_io_tracewindow_statewindowstateminimized---subprocesspopen) · [`start_tracing`](#start_tracinglog_file_settinglogfilesettingno_file-file_pathnone-file_write_modefilewritemodecreate_only---none) · [`stop_tracing`](#stop_tracing---none) · [`log_message`](#log_messagemessage-str---none) · [`close_io_trace`](#close_io_tracetimeout-float--100---none)
-- **Enums:** [`LogFileSetting`](#logfilesetting) · [`FileWriteMode`](#filewritemode) · [`WindowState`](#windowstate) · [`StatusCode`](#statuscode)
-- **Exceptions:** [`NiIOTraceError`](#niiotraceerror)
+- **Functions:**
+  - [`get_application_path`](#get_application_path---path)
+  - [`launch_io_trace`](#launch_io_tracewindow_statewindowstateminimized---subprocesspopen)
+  - [`start_tracing`](#start_tracinglog_file_settinglogfilesettingno_file-file_pathnone-file_write_modefilewritemodecreate_only---none)
+  - [`stop_tracing`](#stop_tracing---none)
+  - [`log_message`](#log_messagemessage-str---none)
+  - [`close_io_trace`](#close_io_tracetimeout-float--100---none)
+- **Logging:**
+  - [`IOTraceHandler`](#iotracehandler)
+- **Enums:**
+  - [`LogFileSetting`](#logfilesetting)
+  - [`FileWriteMode`](#filewritemode)
+  - [`WindowState`](#windowstate)
+  - [`StatusCode`](#statuscode)
+- **Exceptions:**
+  - [`NiIOTraceError`](#niiotraceerror)
 
 ### Functions
 
@@ -191,6 +204,24 @@ Close the NI IO Trace application and wait for the process to exit. The applicat
 | `FAILED_INVALID_FILE_EXTENSION` | -303207 | The log file extension does not match the format. |
 | `FAILED_BUFFER_TOO_SMALL` | -303208 | The provided buffer is too small. |
 | `FAILED_FILE_ALREADY_EXISTS` | -303209 | The file already exists (with `CREATE_ONLY` mode). |
+
+### Logging
+
+#### `IOTraceHandler`
+
+`niiotrace.logging.IOTraceHandler` is a [`logging.Handler`](https://docs.python.org/3/library/logging.html#handler-objects) subclass that forwards Python log records into the NI IO Trace log via `log_message`. If the IO Trace application is not running, the error is passed to `handleError`.
+
+```python
+import logging
+from niiotrace.logging import IOTraceHandler
+
+logger = logging.getLogger("my_app")
+handler = IOTraceHandler()
+handler.setFormatter(logging.Formatter("[%(levelname)s] %(name)s - %(message)s"))
+logger.addHandler(handler)
+```
+
+See [`examples/logging_handler.py`](examples/logging_handler.py) for a complete runnable example.
 
 ### Exceptions
 
