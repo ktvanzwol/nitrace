@@ -1,0 +1,2 @@
+# This file lists the Python dependencies for the nitrace examples in this directory.
+git+https://github.com/kvanzwol/nitrace.git
