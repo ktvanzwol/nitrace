@@ -5,7 +5,7 @@ A Python library for controlling [NI IO Trace](https://www.ni.com/docs/en-US/bun
 ## Requirements
 
 - Windows
-- Python 3.13+
+- Python 3.10+
 - NI IO Trace installed (part of NI software distributions)
   - [Where Can I Download NI I/O Trace?](https://knowledge.ni.com/KnowledgeArticleDetails?id=kA00Z000000kJcQSAU)
 
