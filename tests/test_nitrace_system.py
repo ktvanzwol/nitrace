@@ -8,7 +8,6 @@ from nitrace import (
     LogFileSetting,
     NiTraceError,
     StatusCode,
-    _check,
 )
 
 pytestmark = pytest.mark.system
