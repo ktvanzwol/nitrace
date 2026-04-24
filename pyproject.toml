@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Karsten van Zwol", email = "karsten.van.zwol@gmail.com" }
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 license = "MIT"
 dependencies = []
 keywords = ["ni", "national-instruments", "io-trace", "nitrace", "tracing", "test-automation"]
