@@ -11,16 +11,22 @@ A Python library for controlling [NI IO Trace](https://www.ni.com/docs/en-US/bun
 
 ## Installation
 
-Install directly from GitHub:
+Install from PyPI:
 
 ```
-pip install git+https://github.com/ktvanzwol/nitrace.git
+pip install nitrace
 ```
 
 Or with [uv](https://docs.astral.sh/uv/):
 
 ```
-uv add git+https://github.com/ktvanzwol/nitrace.git
+uv add nitrace
+```
+
+Or install directly from GitHub:
+
+```
+pip install git+https://github.com/ktvanzwol/nitrace.git
 ```
 
 ## Quick Start
