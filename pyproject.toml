@@ -1,7 +1,7 @@
 [project]
 name = "nitrace"
 version = "0.1.0"
-description = "Python wrapper for NI IO Trace programmatic API (NiSpyLog.dll)"
+description = "Python wrapper for NI IO Trace programmatic C API"
 readme = "README.md"
 authors = [
     { name = "Karsten van Zwol", email = "karsten.van.zwol@gmail.com" }
@@ -9,7 +9,7 @@ authors = [
 requires-python = ">=3.10"
 license = "MIT"
 dependencies = []
-keywords = ["ni", "national-instruments", "io-trace", "nitrace", "tracing", "test-automation"]
+keywords = ["ni", "io-trace", "nitrace", "ni-io-trace", "nimi-python", "nidcpower", "nidmm", "niscope", "niswitch", "nidigital", "nidaqmx", "nifgen", "nirfsa", "nirfsg", "nise", "ni-visa", "pyVISA"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
